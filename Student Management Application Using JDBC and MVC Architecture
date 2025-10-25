@@ -1,0 +1,185 @@
+StudentMVC/
+├── model/
+│   └── Student.java
+├── controller/
+│   └── StudentDAO.java
+└── view/
+    └── StudentApp.java
+
+
+package model;
+
+public class Student {
+    private int studentID;
+    private String name;
+    private String department;
+    private double marks;
+
+    public Student() {}
+
+    public Student(int studentID, String name, String department, double marks) {
+        this.studentID = studentID;
+        this.name = name;
+        this.department = department;
+        this.marks = marks;
+    }
+
+    public int getStudentID() { return studentID; }
+    public void setStudentID(int studentID) { this.studentID = studentID; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getDepartment() { return department; }
+    public void setDepartment(String department) { this.department = department; }
+    public double getMarks() { return marks; }
+    public void setMarks(double marks) { this.marks = marks; }
+
+    @Override
+    public String toString() {
+        return studentID + " | " + name + " | " + department + " | " + marks;
+    }
+}
+
+
+
+package controller;
+
+import model.Student;
+import java.sql.*;
+import java.util.*;
+
+public class StudentDAO {
+    private Connection con;
+
+    public StudentDAO() throws Exception {
+        String url = "jdbc:mysql://localhost:3306/springSecurity";
+        String user = "root";
+        String password = "Vishal@2026";
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection(url, user, password);
+    }
+
+    public void addStudent(Student s) throws SQLException {
+        PreparedStatement ps = con.prepareStatement("INSERT INTO Student VALUES (?, ?, ?, ?)");
+        ps.setInt(1, s.getStudentID());
+        ps.setString(2, s.getName());
+        ps.setString(3, s.getDepartment());
+        ps.setDouble(4, s.getMarks());
+        ps.executeUpdate();
+        System.out.println("✅ Student Added!");
+    }
+
+    public List<Student> getAllStudents() throws SQLException {
+        List<Student> list = new ArrayList<>();
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM Student");
+        while (rs.next()) {
+            list.add(new Student(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getDouble(4)));
+        }
+        return list;
+    }
+
+    public void updateStudentMarks(int id, double newMarks) throws SQLException {
+        PreparedStatement ps = con.prepareStatement("UPDATE Student SET Marks=? WHERE StudentID=?");
+        ps.setDouble(1, newMarks);
+        ps.setInt(2, id);
+        int updated = ps.executeUpdate();
+        if (updated > 0)
+            System.out.println("✅ Marks Updated!");
+        else
+            System.out.println("❌ Student Not Found!");
+    }
+
+    public void deleteStudent(int id) throws SQLException {
+        PreparedStatement ps = con.prepareStatement("DELETE FROM Student WHERE StudentID=?");
+        ps.setInt(1, id);
+        int deleted = ps.executeUpdate();
+        if (deleted > 0)
+            System.out.println("✅ Student Deleted!");
+        else
+            System.out.println("❌ Student Not Found!");
+    }
+
+    public void close() throws SQLException {
+        con.close();
+    }
+}
+
+
+
+
+package view;
+
+import controller.StudentDAO;
+import model.Student;
+import java.util.*;
+
+public class StudentApp {
+    public static void main(String[] args) {
+        try {
+            StudentDAO dao = new StudentDAO();
+            Scanner sc = new Scanner(System.in);
+            boolean exit = false;
+
+            while (!exit) {
+                System.out.println("\n--- Student Management Menu ---");
+                System.out.println("1. Add Student");
+                System.out.println("2. View All Students");
+                System.out.println("3. Update Student Marks");
+                System.out.println("4. Delete Student");
+                System.out.println("5. Exit");
+                System.out.print("Enter choice: ");
+                int choice = sc.nextInt();
+
+                switch (choice) {
+                    case 1:
+                        System.out.print("Enter StudentID: ");
+                        int id = sc.nextInt();
+                        sc.nextLine();
+                        System.out.print("Enter Name: ");
+                        String name = sc.nextLine();
+                        System.out.print("Enter Department: ");
+                        String dept = sc.nextLine();
+                        System.out.print("Enter Marks: ");
+                        double marks = sc.nextDouble();
+
+                        Student s = new Student(id, name, dept, marks);
+                        dao.addStudent(s);
+                        break;
+
+                    case 2:
+                        List<Student> students = dao.getAllStudents();
+                        System.out.println("\nID | Name | Department | Marks");
+                        for (Student st : students)
+                            System.out.println(st);
+                        break;
+
+                    case 3:
+                        System.out.print("Enter StudentID: ");
+                        int sid = sc.nextInt();
+                        System.out.print("Enter New Marks: ");
+                        double newMarks = sc.nextDouble();
+                        dao.updateStudentMarks(sid, newMarks);
+                        break;
+
+                    case 4:
+                        System.out.print("Enter StudentID to Delete: ");
+                        int did = sc.nextInt();
+                        dao.deleteStudent(did);
+                        break;
+
+                    case 5:
+                        exit = true;
+                        dao.close();
+                        System.out.println("Application Closed.");
+                        break;
+
+                    default:
+                        System.out.println("Invalid Choice!");
+                }
+            }
+            sc.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
