@@ -1,0 +1,53 @@
+-- Step 1: Create Database
+CREATE DATABASE IF NOT EXISTS springSecurity;
+
+-- Step 2: Use Database
+USE springSecurity;
+
+-- Step 3: Create Employee Table
+CREATE TABLE Employee (
+    EmpID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50),
+    Salary DOUBLE
+);
+
+-- Step 4: Insert Sample Employee Data
+INSERT INTO Employee (Name, Salary) VALUES
+('Vishal Patel', 55000),
+('Amit Kumar', 48000),
+('Riya Sharma', 62000),
+('Priya Singh', 70000),
+('Rahul Verma', 51000);
+
+-- Step 5: Create Product Table
+CREATE TABLE Product (
+    ProductID INT PRIMARY KEY AUTO_INCREMENT,
+    ProductName VARCHAR(50),
+    Price DOUBLE,
+    Quantity INT
+);
+
+-- Step 6: Insert Sample Product Data
+INSERT INTO Product (ProductName, Price, Quantity) VALUES
+('Laptop', 65000, 10),
+('Mouse', 700, 50),
+('Keyboard', 1200, 40),
+('Monitor', 15000, 15),
+('Pen Drive', 800, 60);
+
+-- Step 7: Create Student Table
+CREATE TABLE Student (
+    StudentID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50),
+    Department VARCHAR(50),
+    Marks DOUBLE
+);
+
+-- Step 8: Insert Sample Student Data
+INSERT INTO Student (Name, Department, Marks) VALUES
+('Vishal Patel', 'Computer Science', 89.5),
+('Aditi Sharma', 'Electronics', 76.8),
+('Rohit Kumar', 'Mechanical', 82.0),
+('Sneha Gupta', 'Information Tech', 91.2),
+('Ankit Verma', 'Civil', 70.5);
+
